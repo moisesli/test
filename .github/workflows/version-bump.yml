@@ -1,0 +1,34 @@
+name: Version Bump
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "18"
+
+      - name: Stash changes
+        run: git stash
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Bump version and push tag
+        run: |
+          npm install --save-dev standard-version
+          npx standard-version
+          git stash pop
+          git push --follow-tags origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
